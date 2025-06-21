@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Sign In -->
+<div class="container active" id="login-section">
+  <h1>Welcome to jaagu k muh me himanshu ka lun</h1>
+  <input type="text" id="username" placeholder="Enter your name" />
+  <button onclick="login()">Sign In</button>
+</div>
+
+<!-- Game Selection -->
+<div class="container" id="game-selection">
+  <h1 id="welcome"></h1>
+  <div class="option" onclick="selectGame('valorant')">Valorant</div>
+  <div class="option" onclick="selectGame('bgmi')">BGMI</div>
+  <div class="option" onclick="selectGame('cs2')">CS2</div>
+</div>
+
+<!-- Tournament Type Selection -->
+<div class="container" id="tournament-type">
+  <h1 id="game-title">Choose Tournament Type</h1>
+  <div class="option" onclick="showTournamentList('Solo')">Solo</div>
+  <div class="option" onclick="showTournamentList('Duo')">Duo</div>
+  <div class="option" onclick="showTournamentList('Squad')">Squad</div>
+  <button class="btn-back" onclick="switchSection('game-selection')">Back</button>
+</div>
+
+<!-- Tournament List -->
+<div class="container" id="tournament-list">
+  <h1 id="type-title">Available Tournaments</h1>
+  <div id="tournament-cards"></div>
+  <button class="btn-back" onclick="switchSection('tournament-type')">Back</button>
+</div>
+
+<!-- Entry Form -->
+<div class="container" id="entry-form">
+  <h1 id="form-title">Tournament Entry Form</h1>
+  <form onsubmit="submitForm(event)">
+    <input type="text" id="name" placeholder="Full Name" required />
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="text" id="ign" placeholder="In-Game Name (IGN)" required />
+    <input type="text" id="team" placeholder="Team Name" required />
+    <button type="submit">Submit Entry</button>
+    <button type="button" class="btn-back" onclick="switchSection('tournament-list')">Back</button>
+  </form>
+</div>
+
+<script>
+  let username = "";
+  let selectedGame = "";
+  let selectedType = "";
+  let selectedTournament = "";
+
+  const allTournaments = {
+    valorant: {
+      Solo: [
+        { name: "Valorant Solo Showdown", time: "5 PM", prize: "₹5,000", fee: "₹100" },
+        { name: "1v1 Valorant Clash", time: "8 PM", prize: "₹3,000", fee: "₹50" }
+      ],
+      Duo: [
+        { name: "Duo Domination", time: "6 PM", prize: "₹6,000", fee: "₹150" }
+      ],
+      Squad: [
+        { name: "Squad Strike", time: "7 PM", prize: "₹10,000", fee: "₹250" }
+      ]
+    },
+    bgmi: {
+      Solo: [
+        { name: "BGMI Solo Battle", time: "4 PM", prize: "₹4,000", fee: "₹80" }
+      ],
+      Duo: [
+        { name: "BGMI Duo Challenge", time: "6 PM", prize: "₹5,000", fee: "₹100" }
+      ],
+      Squad: [
+        { name: "Squad Survival", time: "9 PM", prize: "₹8,000", fee: "₹200" }
+      ]
+    },
+    cs2: {
+      Solo: [
+        { name: "CS2 Solo Shootout", time: "3 PM", prize: "₹2,000", fee: "₹50" }
+      ],
+      Duo: [
+        { name: "Duo Deathmatch", time: "5 PM", prize: "₹3,500", fee: "₹100" }
+      ],
+      Squad: [
+        { name: "Team Terror", time: "10 PM", prize: "₹12,000", fee: "₹300" }
+      ]
+    }
+  };
+
+  function switchSection(sectionId) {
+    document.querySelectorAll(".container").forEach(c => c.classList.remove("active"));
+    document.getElementById(sectionId).classList.add("active");
+  }
+
+  function login() {
+    const input = document.getElementById("username");
+    username = input.value.trim();
+    if (username === "") return alert("Please enter your name.");
+    document.getElementById("welcome").textContent = `Hello ${username}, select your game:`;
+    switchSection("game-selection");
+  }
+
+  function selectGame(game) {
+    selectedGame = game;
+    document.getElementById("game-title").textContent = `${game.toUpperCase()} - Select Type`;
+    switchSection("tournament-type");
+  }
+
+  function showTournamentList(type) {
+    selectedType = type;
+    const list = allTournaments[selectedGame][type];
+    const container = document.getElementById("tournament-cards");
+    container.innerHTML = "";
+
+    list.forEach(t => {
+      const div = document.createElement("div");
+      div.className = "tournament-card";
+      div.innerHTML = `
+        <h3>${t.name}</h3>
+        <small>Time: ${t.time}</small><br>
+        <small>Prize: ${t.prize}</small><br>
+        <small>Entry Fee: ${t.fee}</small><br>
+        <button onclick="openEntryForm('${t.name}')">Register</button>
+      `;
+      container.appendChild(div);
+    });
+
+    document.getElementById("type-title").textContent = `${selectedGame.toUpperCase()} ${type} Tournaments`;
+    switchSection("tournament-list");
+  }
+
+  function openEntryForm(tournamentName) {
+    selectedTournament = tournamentName;
+    document.getElementById("form-title").textContent = `Register for \"${tournamentName}\"`;
+    switchSection("entry-form");
+  }
+
+  function submitForm(event) {
+    event.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const ign = document.getElementById("ign").value.trim();
+    const team = document.getElementById("team").value.trim();
+
+    if (!name || !email || !ign || !team) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    alert(`🎉 Registered for \"${selectedTournament}\"!\nThank you, ${name}!`);
+    switchSection("game-selection");
+  }
+</script>
+
+</body>
+</html>
